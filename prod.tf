@@ -42,6 +42,20 @@ resource "aws_security_group" "prod_web" {
   }
 }
 
+resource "aws_default_subnet" "default_az1" {
+  availability_zone = "us-east-2a"
+    tags = {
+      "Terraform" : "true"
+  }
+}
+
+resource "aws_default_subnet" "default_az2" {
+  availability_zone = "us-east-2b"
+    tags = {
+      "Terraform" : "true"
+  }
+}
+
 resource "aws_instance" "prod_web" {
   # "prod_web" name can be reused since it's
   # diffentiate by resource type (no name collision)
@@ -66,6 +80,23 @@ resource "aws_eip_association" "prod_web" {
 
 resource "aws_eip" "prod_web" {
   tags = {
-  "Terraform" : "true"
+    "Terraform" : "true"
+  }
+}
+
+resource "aws_elb" "prod_web" {
+  name            = "prod-web"
+  instances       = aws_instance.prod_web.*.id
+  subnets         = [aws_default_subnet.default_az1.id, aws_default_subnet.default_az2.id]
+  security_groups = [aws_security_group.prod_web.id]
+
+  listener {
+    instance_port     = 80
+    instance_protocol = "http"
+    lb_port           = 80
+    lb_protocol       = "http"
+  }
+  tags = {
+    "Terraform" : "true"
   }
 }
