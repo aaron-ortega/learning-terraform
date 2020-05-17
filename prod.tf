@@ -43,6 +43,8 @@ resource "aws_security_group" "prod_web" {
 }
 
 resource "aws_instance" "prod_web" {
+  # "prod_web" name can be reused since it's
+  # diffentiate by resource type (no name collision)
   ami = "ami-0d9ef3d936a8fa1c6"
   instance_type = "t2.micro"
 
@@ -55,3 +57,10 @@ resource "aws_instance" "prod_web" {
   }
 }
 
+resource "aws_eip" "prod_web" {
+  instance = aws_instance.prod_web.id
+
+  tags = {
+  "Terraform" : "true"
+  }
+}
