@@ -41,3 +41,17 @@ resource "aws_security_group" "prod_web" {
     "Terraform" : "true"
   }
 }
+
+resource "aws_instance" "prod_web" {
+  ami = "ami-0d9ef3d936a8fa1c6"
+  instance_type = "t2.micro"
+
+  vpc_security_group_ids = [
+    aws_security_group.prod_web.id
+  ]
+
+  tags = {
+    "Terraform" : "true"
+  }
+}
+
