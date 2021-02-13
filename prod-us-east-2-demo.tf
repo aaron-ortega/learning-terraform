@@ -41,10 +41,23 @@ resource "aws_security_group" "prod_web" {
   }
   egress {
     from_port   = 0
-    protocol    = "-1"  # allow all
+    protocol    = "-1" # allow all
     to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    "Terraform" : "true"
+  }
+}
+
+resource "aws_instance" "prod_web" {
+  ami           = "ami-04ed88a1d80127c62"
+  instance_type = "t2.nano"
+
+  vpc_security_group_ids = [
+    aws_security_group.prod_web.id
+  ]
 
   tags = {
     "Terraform" : "true"
