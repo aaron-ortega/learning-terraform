@@ -24,7 +24,7 @@ resource "aws_s3_bucket" "prod_tf_course" {
 resource "aws_default_vpc" "default" {}
 
 resource "aws_security_group" "prod_web" {
-  name        = "prod_web" # name that AWS will use if empty a random name will be assigned
+  name        = "prod_web"  # name that AWS will use if empty a random name will be assigned
   description = "Allow standard http and https ports inbound and everything outbound"
 
   ingress {
@@ -52,12 +52,23 @@ resource "aws_security_group" "prod_web" {
 }
 
 resource "aws_instance" "prod_web" {
+  # "prod_web" name can be reused since it's
+  # differentiate by resource type (no name collision)
   ami           = "ami-04ed88a1d80127c62"
   instance_type = "t2.nano"
 
   vpc_security_group_ids = [
     aws_security_group.prod_web.id
   ]
+
+  tags = {
+    "Terraform" : "true"
+  }
+}
+
+// Add static IP (we can keep the IP address even if we destroy the image)
+resource "aws_eip" "prod_web" {
+  instance = aws_instance.prod_web.id
 
   tags = {
     "Terraform" : "true"
