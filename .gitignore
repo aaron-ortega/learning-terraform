@@ -1,2 +1,7 @@
 # Pycharm
 .idea
+
+# Terraform
+.terraform
+*.tfstate
+*.tfstate.backup
